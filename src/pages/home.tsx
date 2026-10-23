@@ -114,23 +114,46 @@ export function HomePage({ search }: { search: HomeSearch }) {
       </section>
 
       <section className="mx-auto px-4 pt-4 lg:hidden">
-        <div className="grid grid-cols-[1fr_132px] items-center gap-3 overflow-hidden rounded-[28px] bg-[#2a1c16] p-4">
-          <div>
-            <p className="text-xs text-[#c4b39a]">Bem-vindo à Kurio</p>
-            <h1 className="mt-2 text-[22px] leading-[1.05] font-extrabold tracking-[-0.03em] uppercase">
-              Seja dono da
-              <br />
-              cultura digital
-            </h1>
-            <p className="mt-2 text-xs leading-5 text-[#c4b39a]">Descubra NFTs selecionados de criadores do mundo todo.</p>
-            <a href="#catalogo" className="mt-3 inline-flex text-xs font-semibold tracking-[0.08em] text-[#F5F1EB]">EXPLORAR →</a>
+        <div className="relative isolate h-[190px] overflow-hidden rounded-[30px] bg-[#140e0b]">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(104.74deg, rgba(210, 138, 76, 0.2) 1.08%, rgba(210, 138, 76, 0.1) 99.23%)" }}
+          />
+          <div
+            aria-hidden="true"
+            className="absolute size-[248px] rounded-full"
+            style={{ left: -80, top: -31, background: "linear-gradient(160.25deg, rgba(221, 154, 95, 0.43) 22.1%, rgba(210, 138, 76, 0.04) 87.42%)" }}
+          />
+          <div
+            aria-hidden="true"
+            className="absolute size-[248px] rounded-full"
+            style={{ left: 73, top: -10, background: "linear-gradient(160.25deg, rgba(221, 154, 95, 0.37) 22.1%, rgba(210, 138, 76, 0) 87.42%)" }}
+          />
+          <div className="relative z-[1] flex h-full items-center gap-2 px-4 font-mono">
+            <div className="flex min-w-0 flex-1 flex-col">
+              <p className="text-xs font-medium leading-4 text-[#F5F1EB]">Bem-vindo à Kurio</p>
+              <h1 className="mt-1.5 text-[18px] font-bold leading-[29px] uppercase text-[#F5F1EB]">
+                Seja dono da
+                <br />
+                cultura digital
+              </h1>
+              <p className="mt-1.5 text-xs font-normal leading-[18px] text-[#CFB28C]">Descubra NFTs selecionados de criadores do mundo todo.</p>
+              <a href="#catalogo" className="mt-4 inline-flex items-center gap-2 text-xs font-bold leading-[14px] text-[#E89B55]">
+                EXPLORAR
+                <ChevronRight className="size-4 text-[#D28A4C]" aria-hidden="true" />
+              </a>
+            </div>
+            <div className="relative h-[146px] w-[138px] shrink-0">
+              <img src="/nfts/emerald.webp" alt="Emerald Ape, destaque da coleção Kurio" width={138} height={138} className="absolute top-[5px] left-0 size-[138px] rounded-[16px] object-cover" />
+              <img src="/nfts/sage.webp" alt="" width={58} height={58} className="absolute top-[88px] left-[14px] size-[58px] rounded-[16px] object-cover" />
+            </div>
           </div>
-          <img src="/nfts/emerald.webp" alt="Emerald Ape, destaque da coleção Kurio" width={132} height={132} className="aspect-square w-full rounded-[22px] object-cover" />
         </div>
-        <div className="mt-3 flex justify-center gap-1.5" aria-hidden="true">
-          <span className="size-1.5 rounded-full bg-[#D28A4C]" />
-          <span className="size-1.5 rounded-full bg-[#4a3b32]" />
-          <span className="size-1.5 rounded-full bg-[#4a3b32]" />
+        <div className="mt-2.5 flex justify-center gap-1.5" aria-hidden="true">
+          <span className="size-[7px] rounded-full bg-[#D28A4C]" />
+          <span className="size-[7px] rounded-full bg-[#D28A4C]/35" />
+          <span className="size-[7px] rounded-full bg-[#D28A4C]/35" />
         </div>
       </section>
 

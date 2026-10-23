@@ -1,7 +1,8 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Download, Heart, LogOut, Menu, Search, ShoppingBag, Tag, TriangleAlert, User, Wallet } from "lucide-react";
-import { useState, type ComponentType, type FormEvent, type ReactNode } from "react";
+import { Download, Heart, Home, LogOut, Menu, Search, ShoppingBag, ShoppingCart, Tag, TriangleAlert, User, Wallet } from "lucide-react";
+import { useRef, useState, type ComponentType, type FormEvent, type ReactNode } from "react";
+import { usePageReveal } from "@/components/reveal";
 import { api } from "@/lib/api";
 import { cn, writeToken } from "@/lib/utils";
 import { sessionQuery } from "@/lib/queries";
@@ -38,12 +39,18 @@ export function Crumbs({ items }: { items: string[] }) {
   );
 }
 
+function showMobileNav(path: string) {
+  return !path.startsWith("/nft") && path !== "/carrinho" && path !== "/pagamento" && !path.startsWith("/pedido");
+}
+
 export function Shell({ children }: { children: ReactNode }) {
   const session = useQuery(sessionQuery);
   const cart = useQuery({ queryKey: ["cart"], queryFn: () => api.cart() });
   const count = cart.data?.lines.reduce((sum, line) => sum + line.quantity, 0) ?? 0;
   const path = useRouterState({ select: (state) => state.location.pathname });
   const navigate = useNavigate();
+  const stageRef = useRef<HTMLDivElement>(null);
+  usePageReveal(stageRef, path);
   const [menu, setMenu] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [term, setTerm] = useState("");
@@ -56,8 +63,8 @@ export function Shell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-ink text-cream">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/95 backdrop-blur">
+    <div ref={stageRef} className="min-h-screen bg-ink text-cream">
+      <header className="sticky top-0 z-40 hidden border-b border-white/10 bg-ink/95 backdrop-blur lg:block">
         <div className="relative mx-auto flex h-[74px] max-w-[1240px] items-center px-4 md:px-8">
           <Link to="/" className="flex h-[18px] w-12 items-center text-[11px] leading-none font-semibold tracking-[0.12em]" aria-label="Kurio, início">
             KURIO
@@ -129,9 +136,48 @@ export function Shell({ children }: { children: ReactNode }) {
           </div>
         </DialogContent>
       </Dialog>
-      <main>{children}</main>
+      <main className={showMobileNav(path) ? "max-lg:pb-[126px]" : undefined}>{children}</main>
       <Footer />
-      <ScenarioPanel />
+      {showMobileNav(path) ? (
+        <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-40 h-[118px] lg:hidden" aria-label="Navegação móvel">
+          <div className="pointer-events-auto absolute inset-x-3 bottom-0 h-[80px]">
+            <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 80" preserveAspectRatio="none" aria-hidden="true" style={{ filter: "drop-shadow(0px -10px 24px rgba(10, 6, 4, 0.45))" }}>
+              <path
+                fill="#241612"
+                d="M0 80V58C0 26 26 0 58 0H116C140 0 150 8 166 26C182 44 192 52 200 52C208 52 218 44 234 26C250 8 260 0 284 0H342C374 0 400 26 400 58V80H0Z"
+              />
+            </svg>
+            <div className="relative grid h-full grid-cols-5 items-center">
+              <Link to="/" className={cn("grid place-items-center", path === "/" ? "text-[#E89B55]" : "text-[#CFB28C]")} aria-label="Início">
+                <Home className="size-[22px]" strokeWidth={1.75} fill={path === "/" ? "currentColor" : "none"} />
+              </Link>
+              <Link to="/perfil" search={{ aba: "interesses" }} className="grid place-items-center text-[#CFB28C]" aria-label="Favoritos">
+                <Heart className="size-[22px]" strokeWidth={1.75} />
+              </Link>
+              <span aria-hidden="true" />
+              <Link to="/carrinho" className="grid place-items-center text-[#CFB28C]" aria-label={`Carrinho, ${count} itens`}>
+                <span className="relative">
+                  <ShoppingCart className="size-[22px]" strokeWidth={1.75} />
+                  {count > 0 ? <span className="absolute -top-1.5 -right-2.5 grid size-4 place-items-center rounded-full bg-[#E89B55] text-[10px] leading-none font-bold text-[#140D0A]">{count}</span> : null}
+                </span>
+              </Link>
+              <button type="button" className="grid place-items-center text-[#CFB28C]" aria-label="Abrir menu" onClick={() => setMenu(true)}>
+                <User className="size-[22px]" strokeWidth={1.75} />
+              </button>
+            </div>
+          </div>
+          <Link
+            to="/"
+            hash="catalogo"
+            aria-label="Explorar coleções"
+            className="pointer-events-auto absolute bottom-[48px] left-1/2 z-10 grid size-[65px] -translate-x-1/2 place-items-center rounded-full text-[#F5F1EB]"
+            style={{ background: "linear-gradient(180deg, rgba(210, 138, 76, 0.4) -16.92%, #D28A4C 109.23%)" }}
+          >
+            <img src="/icon/qr.svg" alt="" className="h-6 w-[27px]" />
+          </Link>
+        </nav>
+      ) : null}
+      <ScenarioPanel raised={showMobileNav(path)} />
       <div role="status" aria-live="polite" id="live-region" className="sr-only" />
     </div>
   );
@@ -145,11 +191,11 @@ const SERVICES = [
 
 function Footer() {
   return (
-    <footer className="mt-16">
+    <footer className="mt-16 hidden lg:block">
       <div className="mx-auto max-w-[1240px] bg-[#241612] px-4 py-12 md:px-8">
         <div className="grid gap-8 lg:grid-cols-4 lg:gap-0">
           {SERVICES.map(([mark, title, copy]) => (
-            <article key={mark} className="lg:border-r lg:border-amber lg:px-6 lg:first:pl-0">
+            <article key={mark} className="reveal lg:border-r lg:border-amber lg:px-6 lg:first:pl-0">
               <span className="grid size-14 place-items-center rounded-full bg-amber text-lg font-semibold text-[#2a160c]">{mark}</span>
               <h2 className="mt-4 text-sm font-semibold text-cream">{title}</h2>
               <p className="mt-2 max-w-[26ch] text-sm leading-6 text-[#c4b39a]">{copy}</p>
@@ -166,7 +212,7 @@ function Footer() {
         </div>
 
         <div className="mt-8 grid gap-8 text-sm text-[#c4b39a] sm:grid-cols-2 lg:grid-cols-4">
-          <div className="flex flex-col gap-2">
+          <div className="reveal flex flex-col gap-2">
             <p className="mb-1 font-semibold text-cream">Meu perfil</p>
             <Link to="/perfil">Meu perfil</Link>
             <Link to="/perfil" search={{ aba: "colecao" }}>Minha coleção</Link>
@@ -174,7 +220,7 @@ function Footer() {
             <Link to="/criadores">Estúdio do criador</Link>
             <Link to="/perfil" search={{ aba: "interesses" }}>Lista de interesses</Link>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="reveal flex flex-col gap-2">
             <p className="mb-1 font-semibold text-cream">Central de ajuda</p>
             <p>Central de ajuda</p>
             <Link to="/" hash="catalogo">Como comprar NFTs</Link>
@@ -182,7 +228,7 @@ function Footer() {
             <p>Política do mercado</p>
             <p>Denunciar item</p>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="reveal flex flex-col gap-2">
             <p className="mb-1 font-semibold text-cream">Coleções</p>
             <Link to="/" search={{ categoria: "arte-digital", pagina: 1 }}>Arte digital</Link>
             <Link to="/" search={{ categoria: "fotografia", pagina: 1 }}>Fotografia</Link>
@@ -190,7 +236,7 @@ function Footer() {
             <Link to="/" search={{ categoria: "arte-3d", pagina: 1 }}>Arte 3D</Link>
             <Link to="/" search={{ categoria: "utilidade", pagina: 1 }}>Utilidade</Link>
           </div>
-          <div>
+          <div className="reveal">
             <p className="font-semibold text-cream">Redes sociais</p>
             <div className="mt-3 flex gap-2 text-amber">
               <SocialIcon label="Facebook"><FacebookIcon /></SocialIcon>
@@ -265,7 +311,7 @@ function Newsletter() {
   const [note, setNote] = useState("");
   return (
     <form
-      className="lg:px-6"
+      className="reveal lg:px-6"
       onSubmit={(event) => {
         event.preventDefault();
         setNote("A lista de novidades ainda não envia mensagens. Nenhum cadastro foi concluído.");
@@ -296,11 +342,11 @@ const SCENARIOS = [
   ["preco-muda", "Preço muda no carrinho"],
 ] as const;
 
-function ScenarioPanel() {
+function ScenarioPanel({ raised }: { raised: boolean }) {
   const [open, setOpen] = useState(false);
   const current = localStorage.getItem("kurio.scenario") ?? "padrao";
   return (
-    <div className="fixed bottom-4 left-4 z-40" data-testid="scenario-panel">
+    <div className={cn("fixed bottom-4 left-4 z-40", raised ? "max-lg:bottom-[150px]" : "max-lg:bottom-auto max-lg:top-3 max-lg:left-14")} data-testid="scenario-panel">
       <button type="button" className="rounded-full bg-panel px-3 py-2 text-xs text-muted" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
         Simulação
       </button>

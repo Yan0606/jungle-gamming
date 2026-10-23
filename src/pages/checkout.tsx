@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Crumbs } from "@/components/shell";
 import { Button, FieldError, Input, Label, Skeleton } from "@/components/ui";
@@ -29,6 +29,7 @@ export function CheckoutPage() {
   const [note, setNote] = useState("");
   const [referral, setReferral] = useState("");
   const [key] = useState(() => sessionStorage.getItem("kurio.order-key") ?? crypto.randomUUID());
+  const priceShifted = useRef(false);
   const quote = useQuery({
     queryKey: ["cart", network],
     queryFn: () => api.quote(network),
@@ -40,16 +41,18 @@ export function CheckoutPage() {
   }, [key]);
 
   useEffect(() => {
+    if (priceShifted.current) return;
     if (localStorage.getItem("kurio.scenario") !== "preco-muda") return;
-    const timer = window.setTimeout(() => {
-      const first = quote.data?.lines[0];
-      if (!first) return;
-      void api.changePrice(first.nftId, "3.33").then(() => {
+    const first = quote.data?.lines[0];
+    if (!first) return;
+    priceShifted.current = true;
+    const nftId = first.nftId;
+    window.setTimeout(() => {
+      void api.changePrice(nftId, "3.33").then(() => {
         queryClient.invalidateQueries({ queryKey: ["cart"] });
         queryClient.invalidateQueries({ queryKey: ["nfts"] });
       });
     }, 1200);
-    return () => window.clearTimeout(timer);
   }, [quote.data?.lines, queryClient]);
 
   const connect = useMutation({

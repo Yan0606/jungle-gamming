@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { ChevronLeft, Minus, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Crumbs } from "@/components/shell";
@@ -78,35 +78,46 @@ export function CartPage() {
 
   return (
     <div className="mx-auto max-w-[1240px] px-4 py-8 md:px-8">
-      <Crumbs items={["Início", "Mercado", "Carrinho"]} />
-      <h1 className="mt-4 text-lg font-semibold">Carrinho de NFTs</h1>
+      <div className="relative max-lg:mb-2">
+        <Link to="/" aria-label="Voltar" className="absolute top-0 left-0 grid size-10 place-items-center lg:hidden">
+          <ChevronLeft className="size-5" />
+        </Link>
+        <div className="max-lg:hidden">
+          <Crumbs items={["Início", "Mercado", "Carrinho"]} />
+        </div>
+        <h1 className="mt-4 text-lg font-semibold max-lg:mt-2 max-lg:text-center max-lg:text-[17px]">Carrinho de NFTs</h1>
+      </div>
       {quote.warnings.length ? (
         <div className="mt-4 rounded-2xl border border-amber/40 bg-amber/10 p-4 text-sm" role="status">
           {quote.warnings.map((warning) => <p key={warning}>{warning}</p>)}
         </div>
       ) : null}
-      <div className="mt-6 flex flex-col items-start justify-between gap-8 font-mono lg:flex-row">
-        <div className="w-full max-w-[782px] overflow-x-auto">
-          <div className="flex min-w-[758px] items-center justify-between pr-6 text-base leading-4 text-[#F5F1EB]">
+      <div className="mt-6 flex flex-col items-start justify-between gap-8 font-mono max-lg:font-sans lg:flex-row">
+        <div className="reveal w-full max-w-[782px] overflow-x-auto max-lg:overflow-visible">
+          <div className="flex min-w-[758px] items-center justify-between pr-6 text-base leading-4 text-[#F5F1EB] max-lg:hidden">
             <span className="w-[250px] font-bold">NFTs</span>
             <span className="w-[77px] text-center font-medium">Preço</span>
             <span className="w-[88px] text-center font-bold">Edições</span>
             <span className="w-[87px] text-center font-medium">Total</span>
             <span className="w-6" />
           </div>
-          <div className="mt-3 h-px bg-[#D28A4C]" />
+          <div className="mt-3 h-px bg-[#D28A4C] max-lg:hidden" />
           <div className="mt-3 flex flex-col gap-3">
             {quote.lines.map((line) => (
-              <div key={`${line.nftId}-${line.editionId}`} className="flex h-[70px] min-w-[758px] items-center justify-between bg-[#241612] pr-6">
-                <div className="flex w-[250px] items-center gap-4">
-                  <img src={line.image} alt="" className="size-[70px] rounded-[6px] object-cover" />
-                  <div>
-                    <Link to="/nft/$id" params={{ id: line.nftId }} className="block text-base leading-4 font-bold text-[#F5F1EB]">{line.name}</Link>
-                    <p className="mt-1.5 text-sm leading-4 text-[#B39463]">ID do token: {tokenCode(line.name)}</p>
+              <div key={`${line.nftId}-${line.editionId}`} className="flex h-[70px] min-w-[758px] items-center justify-between bg-[#241612] pr-6 max-lg:h-auto max-lg:min-w-0 max-lg:rounded-[18px] max-lg:bg-[#2a1c16] max-lg:p-3 max-lg:pr-3">
+                <div className="flex w-[250px] items-center gap-4 max-lg:w-auto max-lg:min-w-0 max-lg:flex-1">
+                  <img src={line.image} alt="" className="size-[70px] rounded-[6px] object-cover max-lg:size-14 max-lg:rounded-xl" />
+                  <div className="min-w-0">
+                    <Link to="/nft/$id" params={{ id: line.nftId }} className="block text-base leading-4 font-bold text-[#F5F1EB] max-lg:text-sm">{line.name}</Link>
+                    <p className="mt-1.5 text-sm leading-4 text-[#B39463] max-lg:text-xs">
+                      <span className="max-lg:hidden">ID do token: {tokenCode(line.name)}</span>
+                      <span className="hidden max-lg:inline">Edição: {line.editionName}</span>
+                    </p>
+                    <p className="mt-1 text-sm font-bold text-[#E89B55] lg:hidden">{line.unitPriceEth} ETH</p>
                   </div>
                 </div>
-                <p className="w-[77px] text-center text-base leading-4 font-bold text-[#CFB28C]">{line.unitPriceEth} ETH</p>
-                <div className="flex w-[88px] shrink-0 items-center justify-center gap-3">
+                <p className="w-[77px] text-center text-base leading-4 font-bold text-[#CFB28C] max-lg:hidden">{line.unitPriceEth} ETH</p>
+                <div className="flex w-[88px] shrink-0 items-center justify-center gap-3 max-lg:w-auto">
                   <button
                     type="button"
                     className="grid h-[30px] w-5 shrink-0 place-items-center rounded-[20px] border border-[#140D0A] bg-[#D28A4C] text-black shadow-[0_4px_12px_-2px_rgba(20,13,10,0.15)]"
@@ -135,7 +146,7 @@ export function CartPage() {
                     <Plus className="size-3.5" strokeWidth={3} />
                   </button>
                 </div>
-                <p className="w-[87px] text-center text-base leading-4 font-bold text-[#E89B55]">{line.lineTotalEth} ETH</p>
+                <p className="w-[87px] text-center text-base leading-4 font-bold text-[#E89B55] max-lg:hidden">{line.lineTotalEth} ETH</p>
                 <button type="button" className="text-[#B39463]" aria-label="Remover" onClick={() => remove.mutate(line)}>
                   <Trash2 className="size-6" strokeWidth={1.5} />
                 </button>
@@ -143,9 +154,9 @@ export function CartPage() {
             ))}
           </div>
         </div>
-        <aside className="w-full lg:w-[332px]">
-          <h2 className="text-lg leading-4 font-bold text-[#F5F1EB]">Resumo da carteira</h2>
-          <div className="mt-3 h-px bg-[#D28A4C]" />
+        <aside className="reveal w-full lg:w-[332px]">
+          <h2 className="text-lg leading-4 font-bold text-[#F5F1EB] max-lg:hidden">Resumo da carteira</h2>
+          <div className="mt-3 h-px bg-[#D28A4C] max-lg:hidden" />
           <form
             className="mt-6"
             onSubmit={(event) => {
@@ -153,8 +164,8 @@ export function CartPage() {
               apply.mutate();
             }}
           >
-            <label htmlFor="coupon" className="text-sm leading-4 font-bold text-[#F5F1EB]">Código promocional</label>
-            <div className="mt-2 flex h-10 overflow-hidden rounded-[3px] border border-[#D28A4C]">
+            <label htmlFor="coupon" className="text-sm leading-4 font-bold text-[#F5F1EB] max-lg:sr-only">Código promocional</label>
+            <div className="mt-2 flex h-10 overflow-hidden rounded-[3px] border border-[#D28A4C] max-lg:mt-0 max-lg:rounded-full max-lg:border-[#3F2319] max-lg:bg-[#2a1c16]">
               <input
                 id="coupon"
                 value={coupon}
@@ -173,29 +184,29 @@ export function CartPage() {
               </button>
             ) : null}
           </form>
-          <dl className="mt-6 space-y-3 text-[15px] leading-5 text-[#F5F1EB]">
-            <div className="flex items-start justify-between"><dt>Subtotal</dt><dd className="text-lg leading-4">{quote.subtotalEth} ETH</dd></div>
-            <div className="flex items-start justify-between"><dt>Desconto do lançamento</dt><dd>(-) {Number(quote.discountEth).toFixed(2)}</dd></div>
+          <dl className="mt-6 space-y-3 text-[15px] leading-5 text-[#F5F1EB] max-lg:space-y-2.5">
+            <div className="flex items-center justify-between"><dt>Subtotal</dt><dd className="text-lg leading-4 max-lg:text-[15px] max-lg:leading-5 max-lg:font-medium">{quote.subtotalEth} ETH</dd></div>
+            <div className="flex items-center justify-between"><dt>Desconto do lançamento</dt><dd className="max-lg:font-medium max-lg:text-[#E89B55]">(-) {Number(quote.discountEth).toFixed(2)}</dd></div>
             <div className="flex items-start justify-between">
               <dt>Taxa de rede</dt>
               <dd className="text-right">
-                <span className="block text-lg leading-4">{quote.networkFeeEth} ETH</span>
+                <span className="block text-lg leading-4 max-lg:text-[15px] max-lg:leading-5 max-lg:font-medium">{quote.networkFeeEth} ETH</span>
                 <span className="block text-xs leading-4 font-normal text-[#E89B55]">Taxa estimada</span>
               </dd>
             </div>
-            <div className="flex items-start justify-between text-base leading-4 font-bold"><dt>Total</dt><dd className="text-lg text-[#E89B55]">{quote.totalEth} ETH</dd></div>
+            <div className="flex items-center justify-between text-base leading-4 font-bold max-lg:pt-1"><dt>Total</dt><dd className="text-lg text-[#E89B55] max-lg:text-base max-lg:leading-5">{quote.totalEth} ETH</dd></div>
           </dl>
-          <Link to="/pagamento" className="mt-6 flex h-10 w-full items-center justify-center rounded-[3px] bg-[#D28A4C] text-[15px] leading-4 font-bold text-[#140D0A]">
+          <Link to="/pagamento" className="mt-6 flex h-10 w-full items-center justify-center rounded-[3px] bg-[#D28A4C] text-[15px] leading-4 font-bold text-[#140D0A] max-lg:h-12 max-lg:rounded-full">
             Conectar e finalizar
           </Link>
-          <Link to="/" className="mt-3 block text-center text-[15px] leading-5 text-[#E89B55]">Continuar explorando</Link>
+          <Link to="/" className="mt-3 block text-center text-[15px] leading-5 text-[#E89B55] max-lg:hidden">Continuar explorando</Link>
         </aside>
       </div>
-      <section className="mt-12">
+      <section className="mt-12 max-lg:hidden">
         <h2 className="text-lg font-semibold text-amber">Colecionadores também viram</h2>
         <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {related.data?.items.slice(0, 5).map((entry) => (
-            <Link key={entry.id} to="/nft/$id" params={{ id: entry.id }} className="rounded-2xl border border-line bg-ink-2 p-3">
+            <Link key={entry.id} to="/nft/$id" params={{ id: entry.id }} className="reveal rounded-2xl border border-line bg-ink-2 p-3">
               <img src={entry.image} alt={entry.name} className="aspect-square w-full rounded-xl object-cover" />
               <p className="mt-3 text-sm">{entry.name}</p>
               <p className="text-sm text-amber">{entry.priceEth} ETH</p>

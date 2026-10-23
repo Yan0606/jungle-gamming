@@ -32,19 +32,26 @@ async function expectLoggedIn(page: Page, firstName: string) {
 test("busca, filtros, ordenação e paginação ficam na URL", async ({ page }) => {
   await reset(page);
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /seja dono do futuro/i })).toBeVisible();
+  const mobile = (page.viewportSize()?.width ?? 1440) < 1024;
+  await expect(page.getByRole("heading", { name: mobile ? /cultura digital/i : /seja dono do futuro/i })).toBeVisible();
   await page.getByRole("button", { name: "2", exact: true }).click();
   await expect(page).toHaveURL(/pagina=2/);
   await page.goBack();
   await expect(page).not.toHaveURL(/pagina=2/);
+  if (mobile) await page.getByRole("button", { name: "Filtrar" }).click();
   await page.getByRole("checkbox", { name: /Arte digital/ }).check();
   await expect(page).toHaveURL(/categoria=arte-digital/);
   await expect(page).toHaveURL(/pagina=1/);
   await page.getByLabel("Ordenar por").selectOption("price-asc");
   await expect(page).toHaveURL(/ordem=price-asc/);
-  await page.getByRole("button", { name: "Buscar NFTs" }).click();
-  await page.getByRole("textbox", { name: "Busca" }).fill("Sage");
-  await page.getByRole("button", { name: "Buscar", exact: true }).click();
+  if (mobile) {
+    await page.getByRole("textbox", { name: "Explorar coleções" }).fill("Sage");
+    await page.getByRole("textbox", { name: "Explorar coleções" }).press("Enter");
+  } else {
+    await page.getByRole("button", { name: "Buscar NFTs" }).click();
+    await page.getByRole("textbox", { name: "Busca" }).fill("Sage");
+    await page.getByRole("button", { name: "Buscar", exact: true }).click();
+  }
   await expect(page).toHaveURL(/q=Sage/);
 });
 

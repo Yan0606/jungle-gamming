@@ -33,7 +33,8 @@ async function login(page: Page) {
 test("início", async ({ page }) => {
   await reset(page);
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /seja dono do futuro/i })).toBeVisible();
+  const mobile = (page.viewportSize()?.width ?? 1440) < 1024;
+  await expect(page.getByRole("heading", { name: mobile ? /cultura digital/i : /seja dono do futuro/i })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Emerald Ape #042" })).toBeVisible();
   await settle(page);
   await expect(page).toHaveScreenshot("inicio.png", { fullPage: true });
@@ -53,7 +54,9 @@ test("carrinho", async ({ page }) => {
   await page.goto("/nft/golden-signal-168");
   await page.getByRole("button", { name: "Adicionar ao carrinho" }).click();
   await expect(page.getByRole("heading", { name: "Carrinho de NFTs" })).toBeVisible();
-  await expect(page.getByText("Colecionadores também viram")).toBeVisible();
+  if ((page.viewportSize()?.width ?? 1440) >= 1024) {
+    await expect(page.getByText("Colecionadores também viram")).toBeVisible();
+  }
   await settle(page);
   await expect(page).toHaveScreenshot("carrinho.png", { fullPage: true });
 });

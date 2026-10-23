@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Search, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
 import { ARTICLES, CATEGORIES, FEATURED_NFT_ID, NETWORKS } from "@/mocks/catalog";
 import { api, type NftQuery } from "@/lib/api";
 import { Button, Checkbox, RangeSlider, Skeleton } from "@/components/ui";
+import { cn } from "@/lib/utils";
 import { usePageMeta } from "@/lib/meta";
 
 export interface HomeSearch {
@@ -61,21 +62,44 @@ export function HomePage({ search }: { search: HomeSearch }) {
   const selectedNetworks = (search.rede ?? "").split(",").filter(Boolean);
   const currentPage = search.pagina || 1;
   const pages = catalog.data ? Math.max(1, Math.ceil(catalog.data.total / catalog.data.pageSize)) : 1;
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [seek, setSeek] = useState(search.q ?? "");
 
   return (
     <div>
-      <section className="mx-auto grid max-w-[1240px] items-center gap-10 px-4 py-12 md:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:py-16">
+      <form
+        className="mx-auto flex max-w-[1240px] items-center gap-2 px-4 pt-4 lg:hidden"
+        onSubmit={(event) => {
+          event.preventDefault();
+          update({ q: seek });
+        }}
+      >
+        <label className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-full bg-[#2a1c16] px-4">
+          <Search className="size-4 shrink-0 text-[#c4b39a]" />
+          <input
+            value={seek}
+            onChange={(event) => setSeek(event.target.value)}
+            placeholder="Explorar coleções"
+            aria-label="Explorar coleções"
+            className="w-full bg-transparent text-sm text-[#F5F1EB] outline-none placeholder:text-[#b5a394]"
+          />
+        </label>
+        <button type="button" className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[#2a1c16] text-[#F5F1EB]" aria-label="Filtrar" aria-expanded={filtersOpen} onClick={() => setFiltersOpen((value) => !value)}>
+          <SlidersHorizontal className="size-4" />
+        </button>
+      </form>
+      <section className="mx-auto hidden max-w-[1240px] items-center gap-10 px-4 py-12 md:px-8 lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:py-16">
         <div>
-          <p className="text-sm leading-4 text-cream">Bem-vindo à Kurio</p>
-          <h1 className="mt-5 max-w-[640px] text-[34px] leading-[1.05] font-extrabold tracking-[-0.03em] uppercase md:text-[48px]">
+          <p className="reveal text-sm leading-4 text-cream">Bem-vindo à Kurio</p>
+          <h1 className="reveal mt-5 max-w-[640px] text-[34px] leading-[1.05] font-extrabold tracking-[-0.03em] uppercase md:text-[48px]">
             Seja dono do futuro
             <br />
             da arte digital
           </h1>
-          <p className="mt-5 max-w-[34rem] text-[15px] leading-6 text-[#c4a882]">
+          <p className="reveal mt-5 max-w-[34rem] text-[15px] leading-6 text-[#c4a882]">
             Descubra NFTs selecionados de criadores emergentes e consagrados. Colecione arte digital rara, apoie artistas e tenha uma parte da cultura da internet.
           </p>
-          <a href="#catalogo">
+          <a href="#catalogo" className="reveal block w-fit">
             <Button className="mt-8 h-10 w-[140px] px-0 tracking-[0.04em]">EXPLORAR</Button>
           </a>
         </div>
@@ -85,12 +109,33 @@ export function HomePage({ search }: { search: HomeSearch }) {
           width={450}
           height={450}
           fetchPriority="high"
-          className="aspect-square w-full rounded-[28px] object-cover"
+          className="reveal aspect-square w-full rounded-[28px] object-cover"
         />
       </section>
 
-      <section id="catalogo" className="mx-auto grid max-w-[1240px] gap-8 px-4 pb-8 md:px-8 lg:grid-cols-[250px_1fr]">
-        <aside className="space-y-8">
+      <section className="mx-auto px-4 pt-4 lg:hidden">
+        <div className="grid grid-cols-[1fr_132px] items-center gap-3 overflow-hidden rounded-[28px] bg-[#2a1c16] p-4">
+          <div>
+            <p className="text-xs text-[#c4b39a]">Bem-vindo à Kurio</p>
+            <h1 className="mt-2 text-[22px] leading-[1.05] font-extrabold tracking-[-0.03em] uppercase">
+              Seja dono da
+              <br />
+              cultura digital
+            </h1>
+            <p className="mt-2 text-xs leading-5 text-[#c4b39a]">Descubra NFTs selecionados de criadores do mundo todo.</p>
+            <a href="#catalogo" className="mt-3 inline-flex text-xs font-semibold tracking-[0.08em] text-[#F5F1EB]">EXPLORAR →</a>
+          </div>
+          <img src="/nfts/emerald.webp" alt="Emerald Ape, destaque da coleção Kurio" width={132} height={132} className="aspect-square w-full rounded-[22px] object-cover" />
+        </div>
+        <div className="mt-3 flex justify-center gap-1.5" aria-hidden="true">
+          <span className="size-1.5 rounded-full bg-[#D28A4C]" />
+          <span className="size-1.5 rounded-full bg-[#4a3b32]" />
+          <span className="size-1.5 rounded-full bg-[#4a3b32]" />
+        </div>
+      </section>
+
+      <section id="catalogo" className="mx-auto grid max-w-[1240px] gap-8 px-4 pt-5 pb-8 md:px-8 lg:grid-cols-[250px_1fr] lg:pt-0">
+        <aside className={cn("reveal space-y-8", filtersOpen ? "max-lg:rounded-[24px] max-lg:border max-lg:border-line max-lg:bg-[#241612] max-lg:p-4" : "max-lg:hidden")}>
           <div>
             <h2 className="mb-3 text-sm font-semibold">Coleções</h2>
             <div className="space-y-1">
@@ -142,7 +187,7 @@ export function HomePage({ search }: { search: HomeSearch }) {
         </aside>
 
         <div>
-          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="reveal mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="flex flex-wrap gap-4 text-sm" role="tablist" aria-label="Recortes do catálogo">
               {TABS.map((tab) => (
                 <button
@@ -157,7 +202,7 @@ export function HomePage({ search }: { search: HomeSearch }) {
                 </button>
               ))}
             </div>
-            <label className="text-sm text-muted">
+            <label className={cn("text-sm text-muted", filtersOpen ? "" : "max-lg:hidden")}>
               Ordenar por:{" "}
               <select
                 aria-label="Ordenar por"
@@ -198,15 +243,15 @@ export function HomePage({ search }: { search: HomeSearch }) {
           {catalog.data && catalog.data.items.length > 0 ? (
             <div className="grid grid-cols-2 gap-x-4 gap-y-8 xl:grid-cols-3">
               {catalog.data.items.map((nft) => (
-                <article key={nft.id}>
+                <article key={nft.id} className="reveal">
                   <Link to="/nft/$id" params={{ id: nft.id }}>
-                    <img src={nft.image} alt={nft.name} className="aspect-square w-full rounded-[22px] bg-paper object-cover" />
+                    <img src={nft.image} alt={nft.name} className="aspect-square w-full rounded-[22px] bg-paper object-cover max-lg:rounded-[18px]" />
                   </Link>
                   <h3 className="mt-3 text-sm text-[#d9cdc2]">
                     <Link to="/nft/$id" params={{ id: nft.id }}>{nft.name}</Link>
                   </h3>
                   <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-amber">
-                    <span className="grid size-6 place-items-center rounded-full bg-[#3a2a22] text-[10px] text-cream" aria-hidden="true">
+                    <span className="hidden size-6 place-items-center rounded-full bg-[#3a2a22] text-[10px] text-cream lg:grid" aria-hidden="true">
                       {nft.creatorInitials}
                     </span>
                     <span>
@@ -263,13 +308,13 @@ export function HomePage({ search }: { search: HomeSearch }) {
       </section>
 
       <section id="diario" className="mx-auto max-w-[1240px] px-4 py-8 md:px-8">
-        <h2 className="text-3xl font-semibold">Diário da Cunhagem</h2>
-        <p className="mt-2 max-w-xl text-sm text-muted">
+        <h2 className="reveal text-3xl font-semibold">Diário da Cunhagem</h2>
+        <p className="reveal mt-2 max-w-xl text-sm text-muted">
           Histórias, guias e insights para colecionadores sobre o universo da propriedade digital.
         </p>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {ARTICLES.map((article) => (
-            <article key={article.id} className="overflow-hidden rounded-[24px] border border-line bg-panel">
+            <article key={article.id} className="reveal overflow-hidden rounded-[24px] border border-line bg-panel">
               <img src={article.image} alt="" className="aspect-[4/3] w-full object-cover" />
               <div className="space-y-2 p-4">
                 <p className="text-xs text-faint">{article.dateLabel}</p>
@@ -312,7 +357,7 @@ function PriceFilter({ search, onApply }: { search: HomeSearch; onApply: (min: s
 
 function Promo({ image, title, text }: { image: string; title: string; text: string }) {
   return (
-    <a href="#catalogo" className="grid grid-cols-[140px_1fr] overflow-hidden rounded-[24px] border border-line bg-[#1b130f] sm:grid-cols-[180px_1fr]">
+    <a href="#catalogo" className="reveal grid grid-cols-[140px_1fr] overflow-hidden rounded-[24px] border border-line bg-[#1b130f] sm:grid-cols-[180px_1fr]">
       <img src={image} alt="" className="h-full w-full object-cover" />
       <div className="flex flex-col justify-center p-5">
         <h2 className="text-lg font-semibold">{title}</h2>

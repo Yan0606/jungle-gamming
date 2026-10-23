@@ -97,6 +97,10 @@ test("perfil e carteira exibem erros de validação", async ({ page }) => {
 test("busca abre em diálogo e fecha pelo teclado", async ({ page }) => {
   await reset(page);
   await page.goto("/");
+  if ((page.viewportSize()?.width ?? 1440) < 1024) {
+    await expect(page.getByRole("textbox", { name: "Explorar coleções" })).toBeVisible();
+    return;
+  }
   await page.getByRole("button", { name: "Buscar NFTs" }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();

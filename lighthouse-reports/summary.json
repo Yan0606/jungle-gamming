@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-10-23T17:02:31.435Z",
+  "node": "v22.21.0",
+  "lighthouse": "12.8.2",
+  "chrome": "chrome-launcher headless",
+  "build": "vite preview do dist, cenário padrão dos mocks",
+  "runs": 3,
+  "median": "valor central de cada métrica",
+  "targets": {
+    "performance": 90,
+    "accessibility": 95,
+    "bestPractices": 95,
+    "seo": 90
+  },
+  "summary": [
+    {
+      "page": "inicio",
+      "profile": "mobile",
+      "performance": 83,
+      "accessibility": 100,
+      "bestPractices": 96,
+      "seo": 100,
+      "lcp": 3742.7513,
+      "cls": 0.01606538830916475,
+      "tbt": 48
+    },
+    {
+      "page": "inicio",
+      "profile": "desktop",
+      "performance": 98,
+      "accessibility": 100,
+      "bestPractices": 96,
+      "seo": 100,
+      "lcp": 902.0207499999999,
+      "cls": 0.002241425111689518,
+      "tbt": 0
+    },
+    {
+      "page": "detalhe",
+      "profile": "mobile",
+      "performance": 84,
+      "accessibility": 100,
+      "bestPractices": 96,
+      "seo": 100,
+      "lcp": 3897.0015750000002,
+      "cls": 0,
+      "tbt": 16.5
+    },
+    {
+      "page": "detalhe",
+      "profile": "desktop",
+      "performance": 97,
+      "accessibility": 100,
+      "bestPractices": 96,
+      "seo": 100,
+      "lcp": 927.99065,
+      "cls": 0.07750603773656704,
+      "tbt": 0
+    }
+  ]
+}

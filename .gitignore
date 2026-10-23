@@ -1,0 +1,12 @@
+node_modules
+dist
+.DS_Store
+playwright-report
+test-results
+blob-report
+lighthouse-reports/*
+!lighthouse-reports/summary.json
+*.local
+.env
+.env.*
+!env.example

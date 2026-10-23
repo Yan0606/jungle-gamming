@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Roboto Mono", ui-monospace, monospace;
+  --color-ink: #140e0b;
+  --color-ink-2: #1c1410;
+  --color-panel: #241911;
+  --color-line: #3a2b22;
+  --color-cream: #f4efe8;
+  --color-muted: #b5a394;
+  --color-faint: #948071;
+  --color-amber: #e39a4d;
+  --color-amber-2: #c47d38;
+  --color-paper: #f3ecdf;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-ink);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: #e39a4d;
+  color: #1a100b;
+}
+
+:focus-visible {
+  outline: 2px solid #e39a4d;
+  outline-offset: 2px;
+}
+
+@keyframes kurio-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #2a1f18;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(243, 236, 223, 0.08),
+    transparent
+  );
+  animation: kurio-shimmer 1.4s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .skeleton::after {
+    animation: none;
+  }
+}
